@@ -1,0 +1,32 @@
+{
+  "name": "ea-lib",
+  "version": "1.0.25",
+  "description": "base function library used by ea-module collection",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hagb4rd/ea-lib.git"
+  },
+  "keywords": [
+    "library",
+    "functions",
+    "math",
+    "array",
+    "common"
+  ],
+  "author": "hagb4rd@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hagb4rd/ea-lib/issues"
+  },
+  "homepage": "https://github.com/hagb4rd/ea-lib#readme",
+  "dependencies": {
+    "ea-json": "^1.0.0",
+    "extend": "^3.0.1",
+    "i-ching": "^0.3.5",
+    "ini": "^1.3.4"
+  }
+}
