@@ -4,19 +4,22 @@ var self=global; self.stack=[]; self[LOG] = [];
 
 
 var writer = (function(opts) { 
-    opts=opts||{};
-    var writer=(s)=>{
-        opts = Object.assign({},({depth:2,colors:true}),opts);
+    opts=opts||writer.options;
+    var write=(s,opts)=>{
+        var opts = Object.assign({},write.options,opts);
 
         var txt = typeof(s)=="function"
-                     ? hh.highlight(s.toString())
-                     : util.inspect(s,opts); 
+                     ?  hh.highlight(s.toString())
+                     :  typeof(s)=="string"
+                        ?   util.inspect(s,opts)
+                        : s; 
         //self[LOG].unshift(txt); 
         //var r=process.stdout.write(txt);
         //repl.displayPrompt();
         return txt;
     };
-   return writer;
+    write.options=Object.assign({},opts);
+    return write;
 });
 writer.options = {depth:0, showHidden:false, colors: true};
 
@@ -45,7 +48,7 @@ var cp = $.cp=require('child_process');
 var hh = $.hh=require('cli-highlight');
 var fetch = $.fetch=require('node-fetch');
 var homedir = $.homedir=process.env['DATA']||process.env['HOME'] || process.env['USERPROFILE']||process.cwd();
-var db = $.db=require('dirty')(path.resolve(homedir, './dirtydb'));
+var db = $.db=new require('dirty')(path.resolve(homedir, './dirtydb'));
 var opn = $.opn=require('opn');
 var {JSDOM}=require('jsdom');
 var parse = $.parse=(s)=>(fn)=>{ var page=new JSDOM(s); if(fn.bind) { fn.bind(page.window); }; return fn(page.window.document,page.window,page); };
@@ -71,3 +74,10 @@ var repl=REPL.start({
     writer: $[0]
 });
 repl.on('reset', (context)=>{ console.log("RESET", context); Object.assign(context, $); });
+
+
+var S=$.S = class extends require('stream').Transform {constructor(opts){super(opts);this.buffer='';} 
+static create(){return new S()} 
+_transform(s,encoding,callback){ var str=[...Buffer.from(s)].map(c=>c.toString(16)).map(data=>"0".repeat(data.length%2)+data).join("").match(/.{2}/g).join(' '); this.buffer+=(this.buffer.length?"":" ")+str; callback(null,str); }}; var s=S.create(); s.on('data', console.log); s.write('hello');
+
+$.S = class extends require('stream').Duplex { constructor(opts){super(opts);this.buffer=[];} static create(){ return new S() } _read(size) { this.push(Buffer.from(this.buffer.splice(0,size).join(''))) } _write(s,encoding,callback){ this.buffer=this.buffer||[]; var s='thomas: '+ require("util").inspect(s,{depth:1,showHidden:true,colors:true}); s.split('').forEach(c=>this.buffer.push(c)); callback() }}; S.create()
