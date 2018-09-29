@@ -6,7 +6,8 @@ var self=global; self.stack=[]; self[LOG] = [];
 
 
 var $=require('../index');
-$.$=$.inspect;
+var writer=$.writer=require('../lib/writer');
+$.$=$;
 $.$0=$.writer({depth:0, showHidden:true});
 $.$1=$.writer({depth:1, showHidden:true});
 $.$2=$.writer({depth:2, showHidden:true});
@@ -15,7 +16,7 @@ $.$4=$.writer({depth:4, showHidden:true});
 $.$5=$.writer({depth:5, showHidden:true});
 $.$6=$.writer({depth:6, showHidden:true});
 
-self.console=console;  
+//self.console=console;  
 var log=function(s){ console.log(s); self.stack.unshift(s);  return s; }; Object.assign(log,{ backup(){self.repl.writer.optionsBackup=Object.assign({},self.replwriter.options)}, restore(){self.repl.writer.options=Object.assign({},self.repl.writer.optionsBackup)}, depth(v){ self.repl.writer.options.depth=v; return self.repl.writer.options }})
 
 
@@ -55,6 +56,6 @@ var repl=REPL.start({
         }
         callback(null, result);
     },
-    writer: $.writer()
+    writer: require('../lib/writer')({depth:0, showHidden:true})
 });
 //repl.on('reset', (context)=>{ console.log("RESET", context); Object.assign(context, $); });
