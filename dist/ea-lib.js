@@ -8629,7 +8629,7 @@ var range = exports.range = (a, b, step) => {
     return r;
 };
 // for (var r = []; r.length <= abs(b-a); r.push(min(a, b)+r.length*abs(step||1))) return r; };
-var shuffle = exports.shuffle = function shuffle(o) {for(var j,x,i=o.length;i;j=Math.floor(rand.gen.random()*i),x=o[--i],o[i]=o[j],o[j]=x);return o;};
+var shuffle = exports.shuffle = function shuffle(o) {for(var j,x,i=o.length;i;j=Math.floor(Math.random()*i),x=o[--i],o[i]=o[j],o[j]=x);return o;};
 var map = exports.map = function map(arr, f) {
     arr = Array.from(arr);
     var xs = new Array(arr.length);
@@ -8650,8 +8650,8 @@ var modulo = exports.modulo = (a, n) => ((a % n) + n) % n;
 var ns = exports.ns = (literal, val, target) => { target=target||{}; if(typeof(val)=="undefined") val={}; var last; var path=literal.split('.'); var final=path.pop(); path.reduce((prev, next) => (last = prev[next] = {}, prev[next] ), target);  last[final] = val; return target; };
 ns.help = `ns('net.irc.kamuela','whoop whoop') --> { net: { irc: { kamuela: 'whoop whoop' } } } // namespace `
 
-var compose = exports.compose = (f) => x => f.reduce((prev,nextFn)=>nextFn(prev), x);
-compose.help = `n> var compose=fs=>x=>fs.reduce((prev,nextFn)=>nextFn(prev),x), inc=()=>x=>++x, pow=(n=0)=>x=>x**n, arr=[0,1,2,3,4], f=inc(), g=pow(2); [arr.map(f).map(g), arr.map(compose([f,g]))] // ~> arr.map(x=>g(f(x)))`
+var compose = exports.compose=function(...fs){ return x=>fs.reduce((x,f)=>f(x),x); };
+compose.help = ` var compose=function(...fs){ return x=>fs.reduce((x,f)=>f(x),x); }, add=(n=0)=>x=>x+n, mul=(n=1)=>x=>x*n, pow=(n=0)=>x=>x**n, arr=[0,1,2,3,4], f=add(1), g=pow(2); [arr.map(f).map(g), arr.map(compose(f,g))] // ~> arr.map(x=>g(f(x))) `
 
 
 //var elementOf = exports.elementOf = (iterable,equals=((a,b)=>a==b)) => x => [...iterable].some(e=>equals(e,x));
@@ -8659,7 +8659,7 @@ compose.help = `n> var compose=fs=>x=>fs.reduce((prev,nextFn)=>nextFn(prev),x), 
 
 
 var elemOf=exports.elemOf=(A,equals=((a,b)=>a===b))=>x=>[...A].some(e=>equals(e,x));
-var uniq=exports.uniq=(iterable,elementOf)=>{ elementOf=elementOf||elemOf; return [...iterable].reduce((result, next)=>{ if(!elemOf(result)(next)) result.push(next); return result; },[]); };
+var uniq=exports.uniq=(I,equals=((a,b)=>a===b))=>[...I].reduce((A, x)=>((!A.some(e=>equals(e,x)) && A.push(x)),A),[]);
 
 
 //var uniq = exports.uniq = (arr,equals) => { equals=equals||((a,b)=>a==b); var stack=[]; arr.forEach(entry=>{ if(!stack.some(setItem=>equals(setItem,entry))) { stack.push(entry); }}); return stack; };  //uniq(array,equals); equals(a,b) equality predicate function | default: ((a,b) => a==b)
