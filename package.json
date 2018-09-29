@@ -1,10 +1,14 @@
 {
   "name": "ea-lib",
-  "version": "1.0.41",
+  "version": "1.0.43",
   "description": "base function library used by ea-module collection",
   "main": "index.js",
+  "bin": {
+    "repl": ".bin/repl.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./.bin/repl.js",
     "build": "browserify index.js --standalone eaLib > ./dist/ea-lib.js && uglifyjs -c -m --source-map -o ./dist/ea-lib.min.js -- ./dist/ea-lib.js"
   },
   "repository": {
@@ -34,7 +38,6 @@
     "i-ching": "^0.3.5",
     "ini": "^1.3.5",
     "irc-colors": "^1.4.3",
-    "js-prettify": "^1.4.0",
     "jsdom": "^12.0.0",
     "node-fetch": "^2.2.0",
     "opn": "^5.3.0"
