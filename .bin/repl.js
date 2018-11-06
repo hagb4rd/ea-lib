@@ -40,7 +40,8 @@ var file=$.file=(filePath,utf8=true)=>fs.readFileSync(path.resolve(process.cwd()
     : null);
 var vm=$.vm=require('vm');
 var REPL=require('repl');
-var cx = vm.createContext(Object.assign({},$));
+
+var cx = vm.createContext(Object.assign({},global,$));
 var repl=REPL.start({
     useGlobal: true,
     eval:   async(cmd, context, filename, callback) => {
@@ -49,7 +50,7 @@ var repl=REPL.start({
         
         var result;
         try { 
-            var result = await script.runInContext(cx, {timeout: 10*1000});
+            var result = await script.runInThisContext(cx, {timeout: 10*1000});
             
         } catch(e) {
             callback(e);
