@@ -8973,11 +8973,14 @@ class Vector extends Array {
   }
 
   static size(v) {
+    return Vector.length(v);
+  }
+  static length(v) {
     return Math.sqrt(v.reduce((a,sum)=>sum+a*a,0));
   }
 
   get size() {
-    return Vector.len(this)
+    return Vector.length(this)
   }
 
   static norm(v) {
@@ -9019,8 +9022,14 @@ class Vector extends Array {
   }
 }
 
+class Matrix {
+    constructor(...rows) {
+        this.rows=rows.map(row=>Vector.create(row));
+    }
+}
+
 exports.Vector = Vector;
-exports.v = (x, ...yz) => Vector.create(x, yz);
+exports.v = function(){ return Vector.create.apply(Vector, arguments); }
 },{"util":39}],56:[function(require,module,exports){
 var Vector2D = exports.Vector2D = class Vector2D {
     constructor(x,y) {

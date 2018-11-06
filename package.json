@@ -1,6 +1,6 @@
 {
   "name": "ea-lib",
-  "version": "1.0.47",
+  "version": "1.0.49",
   "description": "base function library used by ea-module collection",
   "main": "index.js",
   "bin": {
