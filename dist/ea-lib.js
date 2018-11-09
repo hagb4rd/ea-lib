@@ -8496,6 +8496,7 @@ var prettify=exports.prettify=(s)=>beautify(s,{ indent_size: 2, space_in_empty_p
 var list = exports.list = require("./list");
 var List = exports.List = require("./array");
 var Vector = exports.Vector = require("./vector").Vector;
+var Matrix = exports.Matrix = require("./vector").Matrix;
 var v = exports.v = require("./vector").v;
 var Vector2D = exports.Vector2D = require("./vector2D");
 var EventTarget = exports.EventTarget = require("./eventtarget");
@@ -8896,8 +8897,8 @@ var {inspect}=require('util');
 class Vector extends Array {
 
   constructor(array) {
-    if(!Array.isArray(array))
-      throw new TypeError('expected contructor parameter must inherit Array');
+    if(!Array.isArray(array) && typeof(array)=='number')
+      array = new Array(array).fill(0);
     if(array.length<1) {
       throw new TypeError('expected contructor parameter must contain at least one element');
     }
@@ -8944,11 +8945,11 @@ class Vector extends Array {
     return this;
   }
 
-  static substract(...vs) {
-    return vs.reduce((v1,v2)=>v1.substract(v2), Vector.create(new Array(vs[0].length)).fill(0));
+  static subtract(...vs) {
+    return vs.reduce((v1,v2)=>v1.subtract(v2), Vector.create(new Array(vs[0].length)).fill(0));
   }
 
-  substract(v) {
+  subtract(v) {
     for(var i=0;i<this.length;i++)
       this[i] -= v[i];
     return this;
@@ -8976,7 +8977,7 @@ class Vector extends Array {
     return Vector.length(v);
   }
   static length(v) {
-    return Math.sqrt(v.reduce((a,sum)=>sum+a*a,0));
+    return Math.sqrt(v.reduce((sum,a)=>sum+a*a,0));
   }
 
   get size() {
@@ -9017,18 +9018,57 @@ class Vector extends Array {
     return super.toJSON();
   }
 
+  /*
   [inspect.custom]() {
     return super[inspect.custom]();
   }
+  */
 }
 
 class Matrix {
-    constructor(...rows) {
-        this.rows=rows.map(row=>Vector.create(row));
+    constructor(rows,cols) {
+        if(Array.isArray(rows)) {
+          this.rows=rows.map(row=>Vector.create(row));
+        } else {
+          this.rows=Array.from({length:rows},(e,i)=>new Vector(cols));
+        }
+    }
+    static create3DRotation(roll, pitch, yaw) {
+	
+      var {cos, sin} = Math;
+    
+      var cosa = cos(roll);
+      var sina = sin(roll);
+      var cosb = cos(yaw);
+      var sinb = sin(yaw);
+      var cosc = cos(-pitch);
+      var sinc = sin(-pitch);
+    
+      return new Matrix([
+        [cosa*cosb, cosa*sinb*sinc - sina*cosc, cosa*sinb*cosc + sina*sinc],
+        [sina*cosb, sina*sinb*sinc + cosa*cosc, sina*sinb*cosc - cosa*sinc],
+        [-sinb, cosb*sinc, cosb*cosc]
+      ]);
+    }
+    static create2DRotation(phi) {
+      
+      var {cos, sin} = Math;
+
+      var cosP=cos(phi);
+      var sinP=sin(phi);
+
+      return new Matrix([
+        [cosP, -sinP],
+        [sinP, cosP]
+      ]);
+    }
+    times(v1) {
+      return Vector.create(this.rows.map(row=>Vector.dot(row,v1)));
     }
 }
 
 exports.Vector = Vector;
+exports.Matrix = Matrix;
 exports.v = function(){ return Vector.create.apply(Vector, arguments); }
 },{"util":39}],56:[function(require,module,exports){
 var Vector2D = exports.Vector2D = class Vector2D {
