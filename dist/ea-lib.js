@@ -8583,11 +8583,7 @@ var xorString = exports.xorString = s => [...String(s)].reduce((prev, next) => p
 
 var seed=exports.seed=(s)=>{ var xorString=s=>[...String(s)].reduce((prev, next)=>prev^=next.charCodeAt(0), 0xFF); const X=9301,A=49297,M=233280; var S=xorString(s); return (min=0,max=1,fn=(x=>x))=>{ S=(S*X+A)%M; return fn(min+(S/M)*(max-min)); }};
 //var srand = (strseed, {min:defaultMin, max:defaultMax, callback}) => { defaultMin = defaultMin || 0; defaultMax = defaultMax || 1; callback = callback || (x=>x); var str = String(strseed||(new Date())).split(""); var seed = 0xFF, multiplicate = 9301, add = 49297, modulo = 233280; for (var i = 0; i < str.length; i++) seed ^= str[i].charCodeAt(0); return (a, b) => { a = a || 1;  b = b || 0;if(a==b) { if(a==0) { return 0; }; }; var max = Math.max([a,b]); var min = Math.min([a,b]); seed = (seed * multiplicate + add) % modulo; return callback(min + (seed / modulo) * (max - min)); } };
-var round = exports.round = (number, precision) => {
-    precision = precision || 0;
-    var factor = 10 ** precision;
-    return Math.round(parseFloat(number) * factor) / factor;
-};
+var round = exports.round = (number, precision) => { precision = precision || 0; var factor = 10 ** precision; return Math.round(parseFloat(number) * factor) / factor; };
 /*
 var rand = exports.rand = (a, b, cb=(x)=>Math.floor(x)) => () => {
     

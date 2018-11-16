@@ -50,7 +50,7 @@ var repl=REPL.start({
         
         var result;
         try { 
-            var result = await script.runInThisContext(cx, {timeout: 10*1000});
+            var result = await script.runInContext(cx, {timeout: 10*1000});
             
         } catch(e) {
             callback(e);
