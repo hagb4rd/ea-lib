@@ -1,6 +1,10 @@
 {
   "name": "ea-lib",
+<<<<<<< HEAD
   "version": "1.0.60",
+=======
+  "version": "1.0.58",
+>>>>>>> db852ed98670fc9ea535acb3ca29a71ddbe7b93c
   "description": "base function library used by ea-module collection",
   "main": "index.js",
   "bin": {
@@ -29,6 +33,7 @@
   },
   "homepage": "https://github.com/hagb4rd/ea-lib#readme",
   "dependencies": {
+    "browserify": "^16.2.3",
     "cli-highlight": "^2.0.0",
     "concurrent-task-queue": "0.0.3",
     "dirty": "^1.1.0",
@@ -43,6 +48,7 @@
     "jsdom": "^12.2.0",
     "minimist": "^1.2.0",
     "node-fetch": "^2.3.0",
-    "opn": "^5.3.0"
+    "opn": "^5.3.0",
+    "uglify-es": "^3.3.9"
   }
 }
