@@ -96,7 +96,7 @@ var repl=module.exports=(command="")=>{
   //load history
   logs.find(s="").then(l=>{
     var lines=repl.history.slice();
-    var temp=l.slice(-100).map(x=>x.text.trimRight()).concat(lines);
+    var temp=l.map(x=>x.text.trimRight()).concat(lines);
     repl.historySize  = temp.length;
     repl.history= temp;
   })
