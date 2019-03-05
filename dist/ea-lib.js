@@ -441,12 +441,17 @@ groupBy.help=`n> var firstLetter=x=>x.slice(0,1); function(fn){ return Array.fro
 // ----
 n>or=(filters)=>x=>[...filters].some(filter=>filter(x)),and=(filters)=>x=>[...filters].every(filter=>filter(x)),elemOf=(A,equals=((a,b)=>a===b))=>x=>[...A].some(e=>equals(e,x)),uniq=(iterable,elementOf)=>{elementOf=elementOf||elemOf;return[...iterable].reduce((result, next)=>{ if(!elemOf(result)(next)) result.push(next); return result; },[]); };intersect=(A,B)=>uniq(A.concat(B)).filter(and([elemOf(A),elemOf(B)])); intersect([2,3,5,7],[1,2,3])
 
-/* */
+/* 
+n>protochain=function*(e){for(;null!=e;e=Object.getPrototypeOf(e))yield e;}; entries=(o)=>[...protochain(o)].flatMap(o=>Object.getOwnPropertyNames(o).map(propertyName=>[propertyName, Object.getOwnPropertyDescriptor(o,propertyName)])); assign=(obj,[k,v])=>(typeof(obj.configurable=='bool')?Object.defineProperty(obj,k,v):obj[k]=v,obj); entries({x:23}).reduce(assign, {blah:199})
+*/
 
 var protochain=exports.protochain=function*(obj) { while(obj!=null) { yield obj; obj=Object.getPrototypeOf(obj) }};
 var describe=exports.describe=(obj)=>[...protochain(obj)].map(o=>[o,Object.getOwnPropertyNames(o).map(k=>[k, Object.getOwnPropertyDescriptor(o,k)])]); 
 
 
+//urlcreate 
+var urlcreate=exports.urlcreate=(url)=>{ var rx=/\[(\d+):(\d+)\]/; var m=url.match(rx); var pad=m[1].length,from=Number(m[1]),to=Number(m[2]); return Array.from({length:to-from+1},(e,i)=>i+from).map(x=>url.replace(m[0],String(x).padStart(pad,'0'))); }; 
+urlcreate.help=`urlcreate("http://elle-fanning.net/images/albums/candids/2012/019-shermanoaks/candids_inshermanoaks[001:020].jpg");//creates array replacing the square block [from:to] with padStart 0s as specified`;
 // globals (NOT RECOMMENDED)
 // ---------
 var setGlobals = exports.setGlobals = () => {
@@ -500,8 +505,8 @@ module.exports = {
 };
 },{}],12:[function(require,module,exports){
 const PIE = exports.PIE = Math.PIE = 2*Math.PI;
-var deg = exports.deg = x => x * (PIE/360);
-var rad = exports.rad = alpha => alpha * (360/PIE);
+var deg = exports.deg = x => x/Math.PI*180;
+var rad = exports.rad = alpha => alpha*Math.PI/180;
 
 
 //var divisors = n =>{ var t1=Date.now(); var result=Array.from({length: Math.floor(n/2)},(e,i)=>i+1).filter(x=>n%x==0); var t2=Date.now(); console.log(`[brute force] computing divisors: ${n} .. ${t2-t1}ms `); return result; };
@@ -669,6 +674,8 @@ var UUID = module.exports = () => { var s4=()=>Math.floor((1+Math.random())*0x10
 },{}],18:[function(require,module,exports){
 var {inspect}=require('util');
 
+var {deg,rad}=require('./math');
+
 class Vector extends Array {
 
   constructor(array) {
@@ -709,6 +716,9 @@ class Vector extends Array {
       return new Vector([x||0,...yz]);
     }
   }
+  static createNormByAngle(degree) {
+    return this.create([Math.cos(rad(degree)),Math.sin(rad(degree))]);
+  }
 
   static scale(k, v) {
     return Vector.create(v.map((a,i)=>k*a));
@@ -721,7 +731,8 @@ class Vector extends Array {
   }
 
   static subtract(...vs) {
-    return vs.reduce((v1,v2)=>v1.subtract(v2), Vector.create(new Array(vs[0].length)).fill(0));
+    var v3=Vector.create(vs[0]);
+    return vs.slice(1).reduce((v1,v2)=>v1.subtract(v2),v3);
   }
 
   subtract(v) {
@@ -731,17 +742,18 @@ class Vector extends Array {
   }
 
   static add(...vs) {
-    return vs.reduce((v1,v2)=>v1.add(v2), Vector.create(new Array(vs[0].length)).fill(0));
+    var v3=new Vector(vs[0].length);
+    return vs.reduce((v1,v2)=>v1.add(v2), v3);
   }
 
   add(v) {
     for(var i=0;i<this.length;i++)
-      this[i] -= v[i];
+      this[i] += v[i];
     return this;
   }
 
   static dot(v1, v2) {
-    return Vector.create(v1.map((a,i)=>v1[i]*v2[i]));
+    return v1.map((a,i)=>v1[i]*v2[i]).reduce((a,b)=>a+b);
   }
 
   dot(v2) {
@@ -749,20 +761,26 @@ class Vector extends Array {
   }
 
   static size(v) {
-    return Vector.length(v);
-  }
-  static length(v) {
     return Math.sqrt(v.reduce((sum,a)=>sum+a*a,0));
   }
 
   get size() {
-    return Vector.length(this)
+    return Vector.size(this)
   }
 
   static norm(v) {
-    let length = Vector.size(v);
-    let div = (length === 0) ? Infinity : 1.0 / length;
-    return Vector.scale(div, v);
+    var len = v.size;
+    var k = (len === 0) 
+      ? 0 
+      : 1.0 / len;
+    return Vector.scale(k, v);
+  }
+
+  get angle() {
+    return Vector.angle(this);
+  }
+  static angle(v) {
+    return deg(Math.acos(v.norm()[0]));
   }
 
   norm() {
@@ -777,7 +795,7 @@ class Vector extends Array {
     ]);
   }
 
-  cross(v2) {
+  cross(v2) {m
     return Vector.cross(this, v2);
   }
 
@@ -807,8 +825,17 @@ class Matrix {
         } else {
           this.rows=Array.from({length:rows},(e,i)=>new Vector(cols));
         }
+        Object.assign(this,this.rows);
+        this.length=this.rows.length;
     }
-    static create3DRotation(roll, pitch, yaw) {
+    [Symbol.iterator]() {
+      return this.rows[Symbol.iterator]();
+    }
+    static rotation3D(roll=0, pitch=0, yaw=0) {
+
+      roll=rad(roll);
+      pitch=rad(pitch);
+      yaw=rad(yaw);
 	
       var {cos, sin} = Math;
     
@@ -825,8 +852,9 @@ class Matrix {
         [-sinb, cosb*sinc, cosb*cosc]
       ]);
     }
-    static create2DRotation(phi) {
+    static rotation2D(phi=0) {
       
+      phi=rad(phi);
       var {cos, sin} = Math;
 
       var cosP=cos(phi);
@@ -837,7 +865,7 @@ class Matrix {
         [sinP, cosP]
       ]);
     }
-    times(v1) {
+    multiplicate(v1) {
       return Vector.create(this.rows.map(row=>Vector.dot(row,v1)));
     }
 }
@@ -845,7 +873,7 @@ class Matrix {
 exports.Vector = Vector;
 exports.Matrix = Matrix;
 exports.v = function(){ return Vector.create.apply(Vector, arguments); }
-},{"util":104}],19:[function(require,module,exports){
+},{"./math":12,"util":104}],19:[function(require,module,exports){
 var Vector2D = exports.Vector2D = class Vector2D {
     constructor(x,y) {
         this.x = x || 0;
