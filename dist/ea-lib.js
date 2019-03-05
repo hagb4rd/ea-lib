@@ -505,8 +505,8 @@ module.exports = {
 };
 },{}],12:[function(require,module,exports){
 const PIE = exports.PIE = Math.PIE = 2*Math.PI;
-var deg = exports.deg = x => x/Math.PI*180;
-var rad = exports.rad = alpha => alpha*Math.PI/180;
+var deg = exports.deg = x => x/(2*Math.PI/360)
+var rad = exports.rad = phi => phi*(2*Math.PI/360);
 
 
 //var divisors = n =>{ var t1=Date.now(); var result=Array.from({length: Math.floor(n/2)},(e,i)=>i+1).filter(x=>n%x==0); var t2=Date.now(); console.log(`[brute force] computing divisors: ${n} .. ${t2-t1}ms `); return result; };
@@ -780,7 +780,10 @@ class Vector extends Array {
     return Vector.angle(this);
   }
   static angle(v) {
-    return deg(Math.acos(v.norm()[0]));
+    //return deg(Math.acos(v.norm()[0]));
+    var [cos,sin] = v.norm();
+    var angle = deg(Math.atan(sin/cos));
+    return  angle;
   }
 
   norm() {
@@ -852,14 +855,15 @@ class Matrix {
         [-sinb, cosb*sinc, cosb*cosc]
       ]);
     }
-    static rotation2D(phi=0) {
+    static rotation2D(v1) {
       
-      phi=rad(phi);
-      var {cos, sin} = Math;
+      
+      var [cosP, sinP] = Vector.create(v1).norm();
 
+      /*
       var cosP=cos(phi);
       var sinP=sin(phi);
-
+      /* */
       return new Matrix([
         [cosP, -sinP],
         [sinP, cosP]
