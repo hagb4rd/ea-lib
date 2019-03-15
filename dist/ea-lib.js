@@ -210,8 +210,8 @@ EventTarget.prototype.emit = EventTarget.prototype.dispatchEvent;
 
 module.exports = EventTarget;
 },{}],8:[function(require,module,exports){
-function* kv(obj, parentKey="", parent=null) { var keys=Object.getOwnPropertyNames(obj); for(let i=0;i<keys.length;i++) { let k=keys[i]; let v=obj[k]; if (typeof v=='object') { yield* kv(v, k, obj) } else { yield({k:k,v:v,obj:obj, parent:parent, parentKey:parentKey})}}};
-var find = kv.find =(iterable,fn,offset=0)=>{ var i=0; var pos=-1; for (var n of iterable) { console.log(`iteration:${i} offset: ${offset} pos:${pos} fn(${n}):${fn(n)} offset==pos:${offset===pos} | `); if(fn(n)) {  pos++; if(pos===offset) { return n; } } i++; } };
+function* kv(obj, parentKey="", parent=null) { var keys=Object.getOwnPropertyNames(obj); for(let i=0;i<keys.length;i++) { let k=keys[i]; let v=obj[k]; if (typeof v=='object') { yield* kv(v, k, obj); }; yield({k:k,v:v,obj:obj, parent:parent, parentKey:parentKey})}};
+kv.help='var a={a: {b :{c: 23}}}; [...kv(a)].filter(({k,v,obj,parent,parentKey})=>parentKey="c")';
 
 module.exports = kv;
 },{}],9:[function(require,module,exports){
@@ -672,9 +672,10 @@ module.exports = Stats;
 },{"./lib":9}],17:[function(require,module,exports){
 var UUID = module.exports = () => { var s4=()=>Math.floor((1+Math.random())*0x10000).toString(16).substring(1); return s4()+s4()+'-'+s4()+'-'+s4()+'-'+s4()+'-'+s4()+s4()+s4()};
 },{}],18:[function(require,module,exports){
-var {inspect}=require('util');
+//var {inspect}=require('util');
 
-var {deg,rad}=require('./math');
+var deg = x => x/(2*Math.PI/360)
+var rad = phi => phi*(2*Math.PI/360);
 
 class Vector extends Array {
 
@@ -877,7 +878,7 @@ class Matrix {
 exports.Vector = Vector;
 exports.Matrix = Matrix;
 exports.v = function(){ return Vector.create.apply(Vector, arguments); }
-},{"./math":12,"util":104}],19:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var Vector2D = exports.Vector2D = class Vector2D {
     constructor(x,y) {
         this.x = x || 0;
