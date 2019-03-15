@@ -1,6 +1,6 @@
 {
   "name": "ea-lib",
-  "version": "1.0.68",
+  "version": "1.0.69",
   "description": "base function library used by ea-module collection",
   "main": "index.js",
   "bin": {
@@ -47,5 +47,8 @@
   "devDependencies": {
     "browserify": "^16.2.3",
     "uglify-es": "^3.3.9"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }
