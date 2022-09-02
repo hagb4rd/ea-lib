@@ -40,9 +40,8 @@ var file = $.file = (filePath, utf8 = true) => fs.readFileSync(path.resolve(proc
   : null);
 var vm = $.vm = require('vm');
 var REPL = require('repl');
-var LogSqlite = require('ea-logs');
+var LogSqlite = require('ea-log');
 var logs = $.logs = new LogSqlite(path.resolve(homedir, './ea-lib.repl.sqlite'));
-var csv = $.csv = require('ea-csv');
 var argv = $.argv = require('minimist');
 var person = require('ea-names');
 var { Person, females, males } = person;
