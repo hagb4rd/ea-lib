@@ -1,6 +1,6 @@
 {
   "name": "ea-1ibs",
-  "version": "1.0.76",
+  "version": "1.0.77",
   "description": "base function library used by ea-module collection",
   "main": "index.js",
   "bin": {
